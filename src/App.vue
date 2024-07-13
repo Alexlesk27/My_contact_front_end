@@ -1,27 +1,58 @@
 <script setup>
 import { ref } from 'vue';
 import { client } from './api/client';
- // Certifique-se de que o caminho está correto
+
 
 const name = ref('');
 const email = ref('');
 const phone = ref('');
 const contacts = ref([]);
+
+const errors = ref({
+  name: '',
+  email: '',
+  phone: ''
+});
+
+const disableCreateForm = ref(false);
 const showEditForm = ref(false);
-const editContactId = ref(null);
-const disableCreateForm = ref(false); // Variável para desabilitar o formulário de criação
 
 async function handleForm() {
-  await client.post(
-    '/v1/contact',
-    {
+  if (validateForm()) {
+    await client.post('/v1/contact', {
       name: name.value,
       email: email.value,
       phone: phone.value
-    }
-  );
-  listContacts();
-  clearForm();
+    });
+    listContacts();
+    clearForm();
+  }
+}
+
+function validateForm() {
+  let isValid = true;
+  if (!name.value) {
+    errors.value.name = 'Nome é obrigatório';
+    isValid = false;
+  } else {
+    errors.value.name = '';
+  }
+
+  if (!email.value) {
+    errors.value.email = 'Email é obrigatório';
+    isValid = false;
+  } else {
+    errors.value.email = '';
+  }
+
+  if (!phone.value) {
+    errors.value.phone = 'Telefone é obrigatório';
+    isValid = false;
+  } else {
+    errors.value.phone = '';
+  }
+
+  return isValid;
 }
 
 async function listContacts() {
@@ -31,15 +62,6 @@ async function listContacts() {
 async function deleteContact(id) {
   await client.delete(`/v1/contact/${id}`);
   listContacts();
-}
-
-async function fillEditForm(contact) {
-  editContactId.value = contact.id;
-  name.value = contact.name;
-  email.value = contact.email;
-  phone.value = contact.phone;
-  showEditForm.value = true;
-  disableCreateForm.value = true; // Desabilita o formulário de criação
 }
 
 async function updateContact() {
@@ -54,13 +76,20 @@ async function updateContact() {
   disableCreateForm.value = false; // Habilita o formulário de criação
 }
 
+function fillEditForm(contact) {
+  name.value = contact.name;
+  email.value = contact.email;
+  phone.value = contact.phone;
+  disableCreateForm.value = true;
+  showEditForm.value = true;
+}
+
 function clearForm() {
   name.value = '';
   email.value = '';
   phone.value = '';
-  editContactId.value = null;
+  disableCreateForm.value = false;
   showEditForm.value = false;
-  disableCreateForm.value = false; // Habilita o formulário de criação
 }
 
 listContacts();
@@ -70,16 +99,25 @@ listContacts();
   <h1 id="my_contacts_label">Meus contatos</h1>
   <div class="container">
     <form @submit.prevent="handleForm" class="form">
-      <input v-model="name" type="text" placeholder="Informe seu nome" class="input" :disabled="disableCreateForm">
-      <input v-model="email" type="email" placeholder="Informe seu email" class="input" :disabled="disableCreateForm">
-      <input v-model="phone" type="text" placeholder="Informe seu contato" class="input" :disabled="disableCreateForm">
+      <div class="input-container">
+        <input v-model="name" type="text" placeholder="Informe seu nome" class="input" :disabled="disableCreateForm" :class="{ 'input-error': errors.name }">
+        <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
+      </div>
+      <div class="input-container">
+        <input v-model="email" type="email" placeholder="Informe seu email" class="input" :disabled="disableCreateForm" :class="{ 'input-error': errors.email }">
+        <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+      </div>
+      <div class="input-container">
+        <input v-model="phone" type="text" placeholder="Informe seu contato" class="input" :disabled="disableCreateForm" :class="{ 'input-error': errors.phone }">
+        <span v-if="errors.phone" class="error-message">{{ errors.phone }}</span>
+      </div>
       <input type="file" placeholder="Escolha uma imagem" class="input" :disabled="disableCreateForm">
       <button type="submit" class="button" :disabled="disableCreateForm">Salvar contato</button>
     </form>
   </div>
 
   <div class="contacts">
-    <table>
+    <table v-if="contacts.length > 0">
       <thead>
         <tr>
           <th>Nome</th>
@@ -93,16 +131,13 @@ listContacts();
           <td>{{ contact.name }}</td>
           <td>{{ contact.email }}</td>
           <td>{{ contact.phone }}</td>
-          
           <td><button @click="deleteContact(contact.id)" class="delete-button">Excluir</button></td>
           <td><button @click="fillEditForm(contact)" class="edit-button">Editar</button></td>
         </tr>
-        
       </tbody>
     </table>
-    
+    <h1 v-if="contacts.length === 0">Lista Vazia</h1>
   </div>
-  <h1 id="empty_list" v-if="contacts.length === 0">Lista Vazia</h1>
 
   <div v-if="showEditForm" class="bottom-sheet">
     <div class="bottom-sheet-content">
