@@ -1,5 +1,55 @@
-# Vue 3 + Vite
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+### README para o Frontend
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+```markdown
+# Projeto de Contatos - Frontend
+
+Este é o frontend do projeto de gerenciamento de contatos. Ele fornece uma interface de usuário para adicionar, editar, excluir e listar contatos.
+
+## Tecnologias Utilizadas
+
+- Vue.js 3
+- Axios
+- Vue Router
+- Bootstrap (opcional, para estilização)
+
+## Funcionalidades
+
+- Adicionar novo contato
+- Listar contatos existentes
+- Editar contato
+- Excluir contato
+- Upload de imagens de perfil dos contatos
+
+## Instalação
+
+1. Clone o repositório:
+ git clone <link-do-repositorio-frontend>
+Navegue até o diretório do projeto:
+
+
+cd nome-do-diretorio-frontend
+Instale as dependências:
+
+npm install
+Inicie o servidor de desenvolvimento:
+
+
+npm run serve
+
+Uso
+Adicionar Contato
+Preencha o formulário com o nome, email, telefone e imagem do contato.
+Clique em "Salvar contato".
+O novo contato aparecerá na lista de contatos.
+Editar Contato
+Clique no botão "Editar" ao lado do contato que deseja editar.
+Preencha os campos com as novas informações.
+Clique em "Salvar alterações".
+Excluir Contato
+Clique no botão "Excluir" ao lado do contato que deseja remover.
+O contato será removido da lista.
+Licença
+Este projeto está licenciado sob a licença MIT.
+
+
